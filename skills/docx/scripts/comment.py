@@ -1,8 +1,16 @@
+#!/usr/bin/env -S uv run
+# /// script
+# requires-python = ">=3.14"
+# dependencies = [
+#   "defusedxml",
+# ]
+# ///
+
 """Add comments to DOCX documents.
 
 Usage:
-    python comment.py unpacked/ 0 "Comment text"
-    python comment.py unpacked/ 1 "Reply text" --parent 0
+    ./scripts/comment.py unpacked/ 0 "Comment text"
+    ./scripts/comment.py unpacked/ 1 "Reply text" --parent 0
 
 Text should be pre-escaped XML (e.g., &amp; for &, &#x2019; for smart quotes).
 
@@ -70,10 +78,10 @@ def _generate_hex_id() -> str:
 
 
 SMART_QUOTE_ENTITIES = {
-    "\u201c": "&#x201C;",  
-    "\u201d": "&#x201D;",  
-    "\u2018": "&#x2018;",  
-    "\u2019": "&#x2019;",  
+    "\u201c": "&#x201C;",
+    "\u201d": "&#x201D;",
+    "\u2018": "&#x2018;",
+    "\u2019": "&#x2019;",
 }
 
 
@@ -88,7 +96,7 @@ def _append_xml(xml_path: Path, root_tag: str, content: str) -> None:
     root = dom.getElementsByTagName(root_tag)[0]
     ns_attrs = " ".join(f'xmlns:{k}="{v}"' for k, v in NS.items())
     wrapper_dom = defusedxml.minidom.parseString(f"<root {ns_attrs}>{content}</root>")
-    for child in wrapper_dom.documentElement.childNodes:  
+    for child in wrapper_dom.documentElement.childNodes:
         if child.nodeType == child.ELEMENT_NODE:
             root.appendChild(dom.importNode(child, True))
     output = _encode_smart_quotes(dom.toxml(encoding="UTF-8").decode("utf-8"))
@@ -140,7 +148,7 @@ def _ensure_comment_relationships(unpacked_dir: Path) -> None:
         return
 
     if _has_relationship(rels_path, "comments.xml"):
-        return  
+        return
 
     dom = defusedxml.minidom.parseString(rels_path.read_text(encoding="utf-8"))
     root = dom.documentElement
@@ -170,7 +178,7 @@ def _ensure_comment_relationships(unpacked_dir: Path) -> None:
         rel.setAttribute("Id", f"rId{next_rid}")
         rel.setAttribute("Type", rel_type)
         rel.setAttribute("Target", target)
-        root.appendChild(rel)  
+        root.appendChild(rel)
         next_rid += 1
 
     rels_path.write_bytes(dom.toxml(encoding="UTF-8"))
@@ -182,7 +190,7 @@ def _ensure_comment_content_types(unpacked_dir: Path) -> None:
         return
 
     if _has_content_type(ct_path, "/word/comments.xml"):
-        return  
+        return
 
     dom = defusedxml.minidom.parseString(ct_path.read_text(encoding="utf-8"))
     root = dom.documentElement
@@ -210,7 +218,7 @@ def _ensure_comment_content_types(unpacked_dir: Path) -> None:
         override = dom.createElement("Override")
         override.setAttribute("PartName", part_name)
         override.setAttribute("ContentType", content_type)
-        root.appendChild(override)  
+        root.appendChild(override)
 
     ct_path.write_bytes(dom.toxml(encoding="UTF-8"))
 
@@ -219,8 +227,8 @@ def add_comment(
     unpacked_dir: str,
     comment_id: int,
     text: str,
-    author: str = "Claude",
-    initials: str = "C",
+    author: str = "Agent",
+    initials: str = "A",
     parent_id: int | None = None,
 ) -> tuple[str, str]:
     word = Path(unpacked_dir) / "word"
@@ -245,7 +253,7 @@ def add_comment(
             date=ts,
             initials=initials,
             para_id=para_id,
-            text=text,  
+            text=text,
         ),
     )
 
@@ -295,8 +303,8 @@ if __name__ == "__main__":
     p.add_argument("unpacked_dir", help="Unpacked DOCX directory")
     p.add_argument("comment_id", type=int, help="Comment ID (must be unique)")
     p.add_argument("text", help="Comment text")
-    p.add_argument("--author", default="Claude", help="Author name")
-    p.add_argument("--initials", default="C", help="Author initials")
+    p.add_argument("--author", default="Agent", help="Author name")
+    p.add_argument("--initials", default="A", help="Author initials")
     p.add_argument("--parent", type=int, help="Parent comment ID (for replies)")
     args = p.parse_args()
 

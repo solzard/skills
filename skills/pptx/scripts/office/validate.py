@@ -1,8 +1,17 @@
+#!/usr/bin/env -S uv run
+# /// script
+# requires-python = ">=3.14"
+# dependencies = [
+#   "defusedxml",
+#   "lxml",
+# ]
+# ///
+
 """
 Command line tool to validate Office document XML files against XSD schemas and tracked changes.
 
 Usage:
-    python validate.py <path> [--original <original_file>] [--auto-repair] [--author NAME]
+    ./scripts/office/validate.py <path> [--original <original_file>] [--auto-repair] [--author NAME]
 
 The first argument can be either:
 - An unpacked directory containing the Office document XML files
@@ -47,8 +56,8 @@ def main():
     )
     parser.add_argument(
         "--author",
-        default="Claude",
-        help="Author name for redlining validation (default: Claude)",
+        default="Agent",
+        help="Author name for redlining validation (default: Agent)",
     )
     args = parser.parse_args()
 
@@ -84,7 +93,12 @@ def main():
             ]
             if original_file:
                 validators.append(
-                    RedliningValidator(unpacked_dir, original_file, verbose=args.verbose, author=args.author)  
+                    RedliningValidator(
+                        unpacked_dir,
+                        original_file,
+                        verbose=args.verbose,
+                        author=args.author,
+                    )
                 )
         case ".pptx":
             validators = [

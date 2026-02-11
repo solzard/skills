@@ -1,13 +1,22 @@
+#!/usr/bin/env -S uv run
+# /// script
+# requires-python = ">=3.14"
+# dependencies = [
+#   "defusedxml",
+#   "lxml",
+# ]
+# ///
+
 """Pack a directory into a DOCX, PPTX, or XLSX file.
 
 Validates with auto-repair, condenses XML formatting, and creates the Office file.
 
 Usage:
-    python pack.py <input_directory> <output_file> [--original <file>] [--validate true|false]
+    ./scripts/office/pack.py <input_directory> <output_file> [--original <file>] [--validate true|false]
 
 Examples:
-    python pack.py unpacked/ output.docx --original input.docx
-    python pack.py unpacked/ output.pptx --validate false
+    ./scripts/office/pack.py unpacked/ output.docx --original input.docx
+    ./scripts/office/pack.py unpacked/ output.pptx --validate false
 """
 
 import argparse
@@ -20,6 +29,7 @@ from pathlib import Path
 import defusedxml.minidom
 
 from validators import DOCXSchemaValidator, PPTXSchemaValidator, RedliningValidator
+
 
 def pack(
     input_directory: str,
@@ -76,12 +86,12 @@ def _run_validation(
     validators = []
 
     if suffix == ".docx":
-        author = "Claude"
+        author = "Agent"
         if infer_author_func:
             try:
                 author = infer_author_func(unpacked_dir, original_file)
             except ValueError as e:
-                print(f"Warning: {e} Using default author 'Claude'.", file=sys.stderr)
+                print(f"Warning: {e} Using default author 'Agent'.", file=sys.stderr)
 
         validators = [
             DOCXSchemaValidator(unpacked_dir, original_file),

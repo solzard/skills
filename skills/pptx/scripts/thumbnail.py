@@ -1,3 +1,12 @@
+#!/usr/bin/env -S uv run
+# /// script
+# requires-python = ">=3.14"
+# dependencies = [
+#   "defusedxml",
+#   "pillow",
+# ]
+# ///
+
 """Create thumbnail grids from PowerPoint presentation slides.
 
 Creates a grid layout of slide thumbnails for quick visual analysis.
@@ -5,13 +14,13 @@ Labels each thumbnail with its XML filename (e.g., slide1.xml).
 Hidden slides are shown with a placeholder pattern.
 
 Usage:
-    python thumbnail.py input.pptx [output_prefix] [--cols N]
+    ./scripts/thumbnail.py input.pptx [output_prefix] [--cols N]
 
 Examples:
-    python thumbnail.py presentation.pptx
+    ./scripts/thumbnail.py presentation.pptx
     # Creates: thumbnails.jpg
 
-    python thumbnail.py template.pptx grid --cols 4
+    ./scripts/thumbnail.py template.pptx grid --cols 4
     # Creates: grid.jpg (or grid-1.jpg, grid-2.jpg for large decks)
 """
 

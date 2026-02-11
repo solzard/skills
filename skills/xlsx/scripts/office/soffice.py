@@ -1,3 +1,9 @@
+#!/usr/bin/env -S uv run
+# /// script
+# requires-python = ">=3.14"
+# dependencies = []
+# ///
+
 """
 Helper for running LibreOffice (soffice) in environments where AF_UNIX
 sockets may be blocked (e.g., sandboxed VMs).  Detects the restriction
@@ -37,7 +43,6 @@ def run_soffice(args: list[str], **kwargs) -> subprocess.CompletedProcess:
     return subprocess.run(["soffice"] + args, env=env, **kwargs)
 
 
-
 _SHIM_SO = Path(tempfile.gettempdir()) / "lo_socket_shim.so"
 
 
@@ -63,7 +68,6 @@ def _ensure_shim() -> Path:
     )
     src.unlink()
     return _SHIM_SO
-
 
 
 _SHIM_SOURCE = r"""
@@ -176,8 +180,8 @@ int close(int fd) {
 """
 
 
-
 if __name__ == "__main__":
     import sys
+
     result = run_soffice(sys.argv[1:])
     sys.exit(result.returncode)
