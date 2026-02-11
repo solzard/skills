@@ -10,7 +10,7 @@ license: Proprietary. LICENSE.txt has complete terms
 
 | Task | Guide |
 |------|-------|
-| Read/analyze content | `python -m markitdown presentation.pptx` |
+| Read/analyze content | `uvx --from "markitdown[pptx]" markitdown presentation.pptx` |
 | Edit or create from template | Read [editing.md](editing.md) |
 | Create from scratch | Read [pptxgenjs.md](pptxgenjs.md) |
 
@@ -20,13 +20,13 @@ license: Proprietary. LICENSE.txt has complete terms
 
 ```bash
 # Text extraction
-python -m markitdown presentation.pptx
+uvx --from "markitdown[pptx]" markitdown presentation.pptx
 
 # Visual overview
-python scripts/thumbnail.py presentation.pptx
+./scripts/thumbnail.py presentation.pptx
 
 # Raw XML
-python scripts/office/unpack.py presentation.pptx unpacked/
+./scripts/office/unpack.py presentation.pptx unpacked/
 ```
 
 ---
@@ -81,17 +81,20 @@ Choose colors that match your topic — don't default to generic blue. Use these
 **Every slide needs a visual element** — image, chart, icon, or shape. Text-only slides are forgettable.
 
 **Layout options:**
+
 - Two-column (text left, illustration on right)
 - Icon + text rows (icon in colored circle, bold header, description below)
 - 2x2 or 2x3 grid (image on one side, grid of content blocks on other)
 - Half-bleed image (full left or right side) with content overlay
 
 **Data display:**
+
 - Large stat callouts (big numbers 60-72pt with small labels below)
 - Comparison columns (before/after, pros/cons, side-by-side options)
 - Timeline or process flow (numbered steps, arrows)
 
 **Visual polish:**
+
 - Icons in small colored circles next to section headers
 - Italic accent text for key stats or taglines
 
@@ -147,7 +150,7 @@ Your first render is almost never correct. Approach QA as a bug hunt, not a conf
 ### Content QA
 
 ```bash
-python -m markitdown output.pptx
+uvx --from "markitdown[pptx]" markitdown output.pptx
 ```
 
 Check for missing content, typos, wrong order.
@@ -155,7 +158,7 @@ Check for missing content, typos, wrong order.
 **When using templates, check for leftover placeholder text:**
 
 ```bash
-python -m markitdown output.pptx | grep -iE "xxxx|lorem|ipsum|this.*(page|slide).*layout"
+uvx --from "markitdown[pptx]" markitdown output.pptx | grep -iE "xxxx|lorem|ipsum|this.*(page|slide).*layout"
 ```
 
 If grep returns results, fix them before declaring success.
@@ -166,7 +169,7 @@ If grep returns results, fix them before declaring success.
 
 Convert slides to images (see [Converting to Images](#converting-to-images)), then use this prompt:
 
-```
+```text
 Visually inspect these slides. Assume there are issues — find them.
 
 Look for:
@@ -209,7 +212,7 @@ Report ALL issues found, including minor ones.
 Convert presentations to individual slide images for visual inspection:
 
 ```bash
-python scripts/office/soffice.py --headless --convert-to pdf output.pptx
+././scripts/office/soffice.py --headless --convert-to pdf output.pptx
 pdftoppm -jpeg -r 150 output.pdf slide
 ```
 
@@ -225,8 +228,8 @@ pdftoppm -jpeg -r 150 -f N -l N output.pdf slide-fixed
 
 ## Dependencies
 
-- `pip install "markitdown[pptx]"` - text extraction
-- `pip install Pillow` - thumbnail grids
+- `uvx --from "markitdown[pptx]" markitdown <file.pptx>` - text extraction
+- `./scripts/thumbnail.py <input.pptx>` - thumbnail grids
 - `npm install -g pptxgenjs` - creating from scratch
-- LibreOffice (`soffice`) - PDF conversion (auto-configured for sandboxed environments via `scripts/office/soffice.py`)
+- LibreOffice (`soffice`) - PDF conversion (auto-configured for sandboxed environments via `./scripts/office/soffice.py`)
 - Poppler (`pdftoppm`) - PDF to images

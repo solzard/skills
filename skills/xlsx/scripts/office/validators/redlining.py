@@ -1,3 +1,9 @@
+#!/usr/bin/env -S uv run
+# /// script
+# requires-python = ">=3.14"
+# dependencies = []
+# ///
+
 """
 Validator for tracked changes in Word documents.
 """

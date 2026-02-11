@@ -1,9 +1,17 @@
+#!/usr/bin/env -S uv run
+# /// script
+# requires-python = ">=3.14"
+# dependencies = [
+#   "defusedxml",
+# ]
+# ///
+
 """Remove unreferenced files from an unpacked PPTX directory.
 
-Usage: python clean.py <unpacked_dir>
+Usage: ./scripts/clean.py <unpacked_dir>
 
 Example:
-    python clean.py unpacked/
+    ./scripts/clean.py unpacked/
 
 This script removes:
 - Orphaned slides (not in sldIdLst) and their relationships
@@ -138,7 +146,9 @@ def remove_orphaned_rels_files(unpacked_dir: Path) -> list[str]:
         for rels_file in rels_dir.glob("*.rels"):
             resource_file = rels_dir.parent / rels_file.name.replace(".rels", "")
             try:
-                resource_rel_path = resource_file.resolve().relative_to(unpacked_dir.resolve())
+                resource_rel_path = resource_file.resolve().relative_to(
+                    unpacked_dir.resolve()
+                )
             except ValueError:
                 continue
 
@@ -169,7 +179,15 @@ def get_referenced_files(unpacked_dir: Path) -> set:
 
 
 def remove_orphaned_files(unpacked_dir: Path, referenced: set) -> list[str]:
-    resource_dirs = ["media", "embeddings", "charts", "diagrams", "tags", "drawings", "ink"]
+    resource_dirs = [
+        "media",
+        "embeddings",
+        "charts",
+        "diagrams",
+        "tags",
+        "drawings",
+        "ink",
+    ]
     removed = []
 
     for dir_name in resource_dirs:
@@ -266,8 +284,8 @@ def clean_unused_files(unpacked_dir: Path) -> list[str]:
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("Usage: python clean.py <unpacked_dir>", file=sys.stderr)
-        print("Example: python clean.py unpacked/", file=sys.stderr)
+        print("Usage: ./scripts/clean.py <unpacked_dir>", file=sys.stderr)
+        print("Example: ./scripts/clean.py unpacked/", file=sys.stderr)
         sys.exit(1)
 
     unpacked_dir = Path(sys.argv[1])
